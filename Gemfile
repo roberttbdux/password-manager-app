@@ -62,4 +62,9 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "rspec-rails"
+  gem "cucumber-rails", require: false
+  gem "database_cleaner"
+  gem "factory_bot_rails"
+  gem "faker", "~> 3.5"
 end
