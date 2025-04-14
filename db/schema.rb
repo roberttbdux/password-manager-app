@@ -10,13 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_27_060303) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_14_015410) do
   create_table "passwords", force: :cascade do |t|
     t.string "service_name"
     t.datetime "last_used"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "service"
+    t.string "email"
+    t.string "password"
     t.index ["user_id"], name: "index_passwords_on_user_id"
   end
 

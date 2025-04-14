@@ -6,7 +6,10 @@ class DashboardController < ApplicationController
    @passwords = current_user.password  # Assuming you have a Password model associated with the user
     # You can add more instance variables for Secure Notes, Watch Tower, etc., if needed.
   end
-
+  
+  def index
+    @passwords = Password.where(user_id: current_user.id)
+  end
  #remove this to show main page
  # skip_before_action :authenticate_user!, only: [:index]
 end
