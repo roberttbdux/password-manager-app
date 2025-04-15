@@ -9,13 +9,23 @@ Rails.application.routes.draw do
 
   #covert this to show main page
   authenticated :user do
-    root to: 'dashboard#index', as: :authenticated_root
+    root to: 'dashboard#passwords', as: :authenticated_root
   end
+
+  get 'dashboard/passwords', to: 'dashboard#passwords', as: :dashboard_passwords
+  get 'dashboard/watchtower', to: 'dashboard#watchtower', as: :dashboard_watchtower
+  get 'dashboard/profile', to: 'dashboard#profile', as: :dashboard_profile
+
+
+  patch 'dashboard/update_profile', to: 'dashboard#update_profile', as: 'dashboard_update_profile'
+
+  #get 'dashboard/profile', to: 'dashboard#profile', as: 'dashboard_profile'
+  #patch 'dashboard/profile', to: 'dashboard#update_profile'
 
   #uncover this to show main page
   #root to: "dashboard#index"
   # Or if you want dashboard to have a separate path:
-  get 'dashboard', to: 'dashboard#index'
+  get 'dashboard', to: 'dashboard#passwords'
   #uncover this to show main page
   
   resources :passwords, only: [:create]
