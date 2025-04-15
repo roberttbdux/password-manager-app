@@ -28,19 +28,19 @@ class DashboardController < ApplicationController
 
     @medium_passwords = @passwords - @weak_passwords - @strong_passwords
 
-    total_passwords = @passwords.count.nonzero? || 1
-    max_score = total_passwords * 100
+    total_passwords = @passwords.count
+    max_score = total_passwords.nonzero? ? total_passwords * 100 : 1
 
     strong_count = @strong_passwords.count
     medium_count = @medium_passwords.count
     weak_count = @weak_passwords.count
 
+    
     actual_score = (strong_count * 100) + (medium_count * 60) + (weak_count * 20)
 
     reuse_penalty = @reused_passwords.uniq(&:id).count * 40
     actual_score -= reuse_penalty
 
-    max_score = @passwords.count * 100
     @security_score = [(actual_score.to_f / max_score) * 100, 0].max.round
   end
 
