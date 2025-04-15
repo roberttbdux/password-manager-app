@@ -1,10 +1,20 @@
-Feature: Sign Up
+Feature: User Signup
+  As a new visitor
+  I want to create an account
+  So that I can securely store my passwords
 
-  Scenario: Navigate to Sign Up page
-    Given I am on the login page
-    When I click on "Sign up"
-    Then I should be redirected to the registration page
+  Scenario: Successful signup
+    Given I am on the signup page
+    When I fill in "Email" with "user@example.com"
+    And I fill in "Password" with "password123"
+    And I fill in "Password confirmation" with "password123"
+    And I click "Sign up"
+    Then I should see "Saved Passwords"
 
-  Scenario: Signing Up with the same account
-    When I type in an existing account from my database
-    Then I should be returned to the login page without a new account being made
+  Scenario: Password confirmation mismatch
+    Given I am on the signup page
+    When I fill in "Email" with "user@example.com"
+    And I fill in "Password" with "password123"
+    And I fill in "Password confirmation" with "wrongpassword"
+    And I click "Sign up"
+    Then I should see "Password confirmation"

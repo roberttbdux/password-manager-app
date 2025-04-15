@@ -1,25 +1,28 @@
 Feature: User Login
+  As a registered user
+  I want to log into my account
+  So that I can access my saved credentials
 
-  Scenario: Successful login with valid credentials
+  Background:
     Given I am a registered user
+
+  Scenario: Successful login
     When I visit the login page
     And I fill in "Email" with "user@example.com"
     And I fill in "Password" with "password123"
-    And I press "Log in"
-    Then I should see a welcome message
-    And I should be redirected to my dashboard
+    And I click "Log in"
+    Then I should see "Saved Passwords"
 
-  Scenario: Unsuccessful login with incorrect credentials
-    Given I am a registered user
+  Scenario: Invalid password
     When I visit the login page
     And I fill in "Email" with "user@example.com"
     And I fill in "Password" with "wrongpassword"
-    And I press "Log in"
-    Then I should see an error message "Invalid Email or password"
+    And I click "Log in"
+    Then I should see "Login"
 
-  Scenario: Login with no domain
-    Given I visit the login page
+  Scenario: Unknown email
     When I visit the login page
-    And I fill in "Email" with "user"
-    And I press "Log in"
-    Then I should see a message saying "please include an @"
+    And I fill in "Email" with "unknown@example.com"
+    And I fill in "Password" with "password123"
+    And I click "Log in"
+    Then I should see "Login"

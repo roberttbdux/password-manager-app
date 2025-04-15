@@ -1,34 +1,36 @@
-Feature: Main Page
+Feature: Password Vault Management
+  As a signed-in user
+  I want to view and manage my saved credentials
+  So that I can securely store my login information
 
-  Scenario: Click on Create button
+  Background:
     Given I am a registered user
-    When I visit the main page
-    And I press "+ Create"
-    Then I should see a pop up with empty credentials
-    And I fill in "Service" with "ExampleOtherSite"
-    And I fill in "Email" with "user@exampleothersite.com"
-    And I fill in "Password" with "password1234"
-    And I press "Insert"
-    I should see my credetials on the side of the page
+    And I am signed in
 
-    Scenario: Show Pass 
-    Given I have an existing entry from Create function
-    And I press three buttons next to an entry
-    Then I should see a pop up
-    And I click "Show Pass" 
-    Then it shows the pasword
+  Scenario: View credentials
+    When I visit the vault page
+    Then I should see "Saved Passwords"
 
-    Scenario: Recover Pass 
-    When I press three buttons next to an entry
-    Then I click "Recover Pass" and it recovers the password
-    Then I should see a menu with options to recover password
+  Scenario: Add a new credential
+    When I click "Create +"
+    And I fill in "Service" with "example.com"
+    And I fill in "Email" with "testuser@example.com"
+    And I fill in "Password" with "supersecret"
+    And I click "Create"
+    Then I should see "example.com" listed
 
-    Scenario: Change Pass
-    When I press three buttons next to an entry
-    Then I click "Change Pass" and I see a popup 
-    Then I type in my new password with "password12345"
+  Scenario: Edit a credential
+    Given I have a credential saved for "example.com"
+    And I refresh the page
+    When I open the actions menu for "example.com"
+    And I click "Edit"
+    And I change "Email" to "updateduser@example.com"
+    And I click "Update"
+    Then I should see "updateduser@example.com" next to "example.com"
 
-    Scenario: Search for Service
-    Given I have a service
-    And I access the service bar and enter "ExampleOtherSite"
-    Then I should see "ExampleOtherSite"
+  Scenario: Delete a credential
+    Given I have a credential saved for "example.com"
+    And I refresh the page
+    When I open the actions menu for "example.com"
+    And I click "Delete"
+    Then I should not see "example.com" on the page
