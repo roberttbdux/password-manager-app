@@ -4,5 +4,8 @@ import "controllers"
 
 // app/javascript/packs/application.js
 
-import Rails from "@rails/ujs"
-Rails.start()
+
+import "./watchtower";
+import "./passwords"
+
+import "watchtower"

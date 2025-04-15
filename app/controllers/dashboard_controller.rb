@@ -12,6 +12,36 @@ class DashboardController < ApplicationController
   end
 
   def watchtower
+    @passwords = current_user.passwords
+  
+    password_counts = @passwords.group_by(&:password)
+    @reused_passwords = password_counts.select { |_pwd, list| list.size > 1 }.values.flatten
+  
+    @weak_passwords = @passwords.select do |p|
+      p.password.length < 8 || !p.password.match?(/[A-Z]/) || !p.password.match?(/\d/)
+    end
+
+    # Password strength categorization
+    @strong_passwords = @passwords.select do |p|
+      p.password.length >= 12 && p.password.match?(/[A-Z]/) && p.password.match?(/\d/) && p.password.match?(/[^A-Za-z0-9]/)
+    end
+
+    @medium_passwords = @passwords - @weak_passwords - @strong_passwords
+
+    total_passwords = @passwords.count.nonzero? || 1
+    max_score = total_passwords * 100
+
+    strong_count = @strong_passwords.count
+    medium_count = @medium_passwords.count
+    weak_count = @weak_passwords.count
+
+    actual_score = (strong_count * 100) + (medium_count * 60) + (weak_count * 20)
+
+    reuse_penalty = @reused_passwords.uniq(&:id).count * 40
+    actual_score -= reuse_penalty
+
+    max_score = @passwords.count * 100
+    @security_score = [(actual_score.to_f / max_score) * 100, 0].max.round
   end
 
   def profile
