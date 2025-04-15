@@ -1,0 +1,45 @@
+body {
+    background-color: #f8f9fa;
+  }
+  .sidebar {
+    height: 100vh;
+    background: #343a40;
+    padding: 20px;
+  }
+  .sidebar .nav-link {
+    color: #fff;
+  }
+  .sidebar .nav-link.active,
+  .sidebar .nav-link:hover {
+    background-color: #495057;
+    border-radius: 5px;
+  }
+  .content-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  .chart-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+  }
+  .chart-container canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .chart-center-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .chart-center-label h4 {
+    font-size: 2rem;
+  }
+  .chart-center-label small {
+    font-size: 0.9rem;
+  }

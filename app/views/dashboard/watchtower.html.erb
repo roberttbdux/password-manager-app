@@ -1,60 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Password Manager - Watch Tower</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .sidebar {
-      height: 100vh;
-      background: #343a40;
-      padding: 20px;
-    }
-    .sidebar .nav-link {
-      color: #fff;
-    }
-    .sidebar .nav-link.active,
-    .sidebar .nav-link:hover {
-      background-color: #495057;
-      border-radius: 5px;
-    }
-    .content-section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
-    .chart-container {
-      position: relative;
-      width: 180px;
-      height: 180px;
-    }
-    .chart-container canvas {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-    .chart-center-label {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .chart-center-label h4 {
-      font-size: 2rem;
-    }
-    .chart-center-label small {
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
   <div class="container-fluid">
     <div class="row">
       <!-- Sidebar -->
@@ -81,20 +24,29 @@
         <div class="content-section mb-4 d-flex align-items-center">
           <!-- Chart on Left -->
           <div class="chart-container me-4">
-            <canvas id="scoreChart" width="180" height="180"></canvas>
+            <canvas id="scoreChart" width="180" height="180" data-score="<%= @security_score %>"></canvas>
+
             <div class="chart-center-label">
-              <h4 class="text-success fw-bold">734</h4>
-              <small class="text-muted">Very Good</small>
+              <h4 class="text-success fw-bold"><%= @security_score %></h4>
+              <small class="text-muted">
+                <%= case @security_score
+                when 90..100 then "Excellent"
+                when 75..89 then "Very Good"
+                when 60..74 then "Good"
+                when 40..59 then "Fair"
+                else "Poor"
+                end %>
+              </small>
             </div>
+
           </div>
 
           <!-- Description -->
           <div style="flex: 1;">
             <h5>Overall Security Score</h5>
             <p class="text-muted">
-              This score gives an overall idea of how safe your stored credentials are. It's calculated based on the number of strong passwords, reused or weak passwords.
+            This score gives an overall idea of how safe your stored credentials are. It's calculated based on the number of strong passwords, reused or weak passwords.
             </p>
-            
           </div>
         </div>
 
@@ -102,63 +54,97 @@
         <div class="content-section mb-4">
           <h6>Overall Password Strength</h6>
           <div class="progress" style="height: 20px;">
-            <div class="progress-bar bg-success" style="width: 70%"></div>
-            <div class="progress-bar bg-warning" style="width: 20%"></div>
-            <div class="progress-bar bg-danger" style="width: 10%"></div>
+            <% total = @passwords.count.nonzero? || 1 %>
+            <div class="progress-bar bg-success" style="width: <%= (@strong_passwords.count.to_f / total * 100).round %>%"></div>
+            <div class="progress-bar bg-warning" style="width: <%= (@medium_passwords.count.to_f / total * 100).round %>%"></div>
+            <div class="progress-bar bg-danger" style="width: <%= (@weak_passwords.count.to_f / total * 100).round %>%"></div>
           </div>
         </div>
 
         <!-- Feature Cards -->
-        <div class="row">
-          <!-- Reused Passwords -->
-          <div class="col-md-3 mb-4">
-            <div class="content-section text-center h-100">
-              <h2 class="text-danger">26</h2>
-              <p class="fw-bold">Reused Passwords</p>
-              <p class="text-muted small">Don’t use the same password on multiple websites. Generate unique passwords to improve your security.</p>
-              <button class="btn btn-outline-primary btn-sm">Show Items</button>
+            <div class="row g-4">
+              <!-- Reused Passwords -->
+              <div class="col-md-3">
+                <div class="content-section text-center h-100">
+                  <h2 class="text-danger"><%= @reused_passwords.size %></h2>
+                  <p class="fw-bold">Reused Passwords</p>
+                  <p class="text-muted small">
+                    Don't use the same password on multiple websites. Generate unique passwords to improve your security.
+                  </p>
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reusedPasswordsModal">
+                    Show Items
+                  </button>
+                </div>
+              </div>
+
+              <!-- Weak Passwords -->
+              <div class="col-md-3">
+                <div class="content-section text-center h-100">
+                  <h2 class="text-warning"><%= @weak_passwords.size %></h2>
+                  <p class="fw-bold">Weak Passwords</p>
+                  <p class="text-muted small">
+                    Weak passwords are easier to guess. Generate strong passwords to keep your accounts safe.
+                  </p>
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#weakPasswordsModal">
+                    Show Items
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <!-- Weak Passwords -->
-          <div class="col-md-3 mb-4">
-            <div class="content-section text-center h-100">
-              <h2 class="text-warning">22</h2>
-              <p class="fw-bold">Weak Passwords</p>
-              <p class="text-muted small">Weak passwords are easier to guess. Generate strong passwords to keep your accounts safe.</p>
-              <button class="btn btn-outline-primary btn-sm">Show Items</button>
+            <!-- For Showing Items -->
+            <!-- Reused Passwords Modal -->
+            <div class="modal fade" id="reusedPasswordsModal" tabindex="-1" aria-labelledby="reusedPasswordsModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="reusedPasswordsModalLabel">Reused Passwords</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <% grouped = @reused_passwords.group_by(&:password) %>
+                      <% grouped.each do |pwd, services| %>
+                        <div class="mb-3">
+                          <strong class="text-danger">Password:</strong> <code><%= pwd %></code>
+                          <div class="mt-1">
+                            <% services.each do |item| %>
+                              <div>Service: <%= item.service %></div>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          
-
-          
+            <!-- Weak Passwords Modal -->
+            <div class="modal fade" id="weakPasswordsModal" tabindex="-1" aria-labelledby="weakPasswordsModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="weakPasswordsModalLabel">Weak Passwords</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <% grouped = @weak_passwords.group_by(&:password) %>
+                    <% grouped.each do |pwd, services| %>
+                      <div class="mb-3">
+                        <strong class="text-warning">Password:</strong> <code><%= pwd %></code>
+                        <div class="mt-1">
+                          <% services.each do |item| %>
+                            <div>Service: <%= item.service %></div>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>       
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Chart Script -->
-  <script>
-    const ctx = document.getElementById('scoreChart').getContext('2d');
-    const scoreChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [734, 266], // score vs remainder to 1000
-          backgroundColor: ['#28a745', '#e9ecef'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '70%',
-        plugins: {
-          tooltip: { enabled: false },
-          legend: { display: false }
-        }
-      }
-    });
-  </script>
-</body>
-</html>
