@@ -35,6 +35,7 @@ class DashboardController < ApplicationController
     medium_count = @medium_passwords.count
     weak_count = @weak_passwords.count
 
+    
     actual_score = (strong_count * 100) + (medium_count * 60) + (weak_count * 20)
 
     reuse_penalty = @reused_passwords.uniq(&:id).count * 40
