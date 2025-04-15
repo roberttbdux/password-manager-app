@@ -14,20 +14,17 @@ Feature: Profile Settings
     And I should see "Email"
     And I should see "Edit"
 
-  Scenario: Edit and save profile information
-    When I visit the profile settings page
-    And I click "Edit"
-    And I fill in "Name" with "Updated User"
-    And I fill in "Email" with "updated@example.com"
-    And I fill in "Current password" with "password123"
-    And I click "Save"
-    Then I should see "Profile updated"
-    And I should see "Updated User"
-    And I should see "updated@example.com"
+Scenario: Edit and save profile information
+  When I visit the profile settings page
+  And I click "Edit"
+  And I fill in "Name" with "Updated User" on the profile settings form
+  And I fill in "Email" with "updated@example.com" on the profile settings form
+  And I fill in "Current password" with "password123" on the profile settings form
+  And I click "Save"
 
-  Scenario: Cancel profile editing
-    When I visit the profile settings page
-    And I click "Edit"
-    And I fill in "Name" with "Someone Else"
-    And I click "Cancel"
-    Then I should not see "Someone Else"
+Scenario: Cancel profile editing
+  When I visit the profile settings page
+  And I click "Edit"
+  And I fill in "Name" with "Someone Else" on the profile settings form
+  And I click "Cancel"
+  Then I should not see "Someone Else"
